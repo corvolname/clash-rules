@@ -50,24 +50,25 @@ dns:
     - https://dns.cloudflare.com/dns-query
 
 proxy-providers:
-
-  ktm:
-    url: ""  订阅链接
-    type: http
+  provider1:
+    url: "https://ktm.nnmmn.cn/api/v1/client/subscribe?token=e06f5d4c69761a63187e4622cc5a2695"  # 订阅链接
+    type: http                    # 订阅类型：HTTP
     interval: 86400
     health-check:
-      enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 300
+      enable: true               # 启用健康检查
+      interval: 180               # 检查间隔：300秒
+      lazy: true                 # 懒加载模式，使用时才检查
+      url: https://www.gstatic.com/generate_204  # 健康检查URL
 
+# ──────────────── 手动节点配置 ────────────────
 proxies:
   # 链式落地节点：通过自动选择节点进行二次代理
   - name: 原生落地
     type: socks5                   # 节点类型：SOCKS5
-    server:           # 服务器地址
+    server:                        # 服务器地址
     port: 443                      # 服务器端口
-    username:         # 用户名
-    password:            # 密码
+    username:                      # 用户名
+    password:                      # 密码
     udp: true                      # 启用UDP转发
     dialer-proxy: 香港优选      # 通过自动选择节点连接
 
@@ -89,9 +90,9 @@ default: &default
       - 德国优选                       # 德国地区节点组
       - 加拿大优选                     # 加拿大地区节点组
       - 链式专用                       # 链式落地专用
+      - DIRECT                       # 直连模式 
       - 其他优选                       # 其他地区节点组
       - 全部优选                       # 优选选择最快节点
-      - DIRECT                       # 直连模式 
 
 # ──────────────── 代理组配置 ────────────────
 proxy-groups:
@@ -103,6 +104,7 @@ proxy-groups:
   - {name: Github, <<: *default}
   - {name: YouTube, <<: *default}  
   - {name: Telegram, <<: *default}
+  
   - name: 节点故转
     type: fallback
     proxies:
@@ -116,28 +118,48 @@ proxy-groups:
       - 法国优选                       # 法国地区节点组
       - 德国优选                       # 德国地区节点组
       - 加拿大优选                     # 加拿大地区节点组
-      - 链式专用                       # 链式落地专用
-      - DIRECT                       # 直连模式 
       - 其他优选                       # 其他地区节点组
-      - 全部优选                       # 优选选择最快节点
+      - 全部优选                       # 手动选择最快节点
 
   # 节点选择组
+ # - {name: 香港手动, type: select, include-all: true, filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"}
   - {name: 香港优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$"}
+#  - {name: 香港出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [香港手动, 香港优选]}
+#  - {name: 新加坡手动, type: select, include-all: true, filter: "(?=.*(广新|新加坡|SG|坡|狮城|🇸🇬|Singapore)).*$"}
   - {name: 新加坡优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广新|新加坡|SG|坡|狮城|🇸🇬|Singapore)).*$"}
+#  - {name: 新加坡出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [新加坡手动, 新加坡优选]}
+#  - {name: 美国手动, type: select, include-all: true, filter: "(?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$"}
   - {name: 美国优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$"}
+#  - {name: 美国出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [美国手动, 美国优选]}
+#  - {name: 台湾手动, type: select, include-all: true, filter: "(?=.*(广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan)).*$"}
   - {name: 台湾优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan)).*$"}
+#  - {name: 台湾出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [台湾手动, 台湾优选]}
+#  - {name: 日本手动, type: select, include-all: true, filter: "(?=.*(广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan)).*$"}
   - {name: 日本优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan)).*$"}
+#  - {name: 日本出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [日本手动, 日本优选]}
+#  - {name: 澳大利亚手动, type: select, include-all: true, filter: "(?=.*(广澳|澳大利亚|澳洲|AU|悉尼|墨尔本|珀斯|🇦🇺|Australia)).*$"}
   - {name: 澳大利亚优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广澳|澳大利亚|澳洲|AU|悉尼|墨尔本|珀斯|🇦🇺|Australia)).*$"}
+#  - {name: 澳大利亚出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [澳大利亚手动, 澳大利亚优选]}
+#  - {name: 英国手动, type: select, include-all: true, filter: "(?=.*(广英|英国|UK|伦敦|曼彻斯特|🇬🇧|United Kingdom)).*$"}
   - {name: 英国优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广英|英国|UK|伦敦|曼彻斯特|🇬🇧|United Kingdom)).*$"}
+#  - {name: 英国出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [英国手动, 英国优选]}
+#  - {name: 法国手动, type: select, include-all: true, filter: "(?=.*(广法|法国|FR|巴黎|马赛|里昂|🇫🇷|France)).*$"}
   - {name: 法国优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广法|法国|FR|巴黎|马赛|里昂|🇫🇷|France)).*$"}
+#  - {name: 法国出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [法国手动, 法国优选]}
+#  - {name: 德国手动, type: select, include-all: true, filter: "(?=.*(广德|德国|DE|柏林|法兰克福|慕尼黑|🇩🇪|Germany)).*$"}
   - {name: 德国优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广德|德国|DE|柏林|法兰克福|慕尼黑|🇩🇪|Germany)).*$"}
+#  - {name: 德国出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [德国手动, 德国优选]}
+#  - {name: 加拿大手动, type: select, include-all: true, filter: "(?=.*(广加|加拿大|CA|温哥华|多伦多|蒙特利尔|🇨🇦|Canada)).*$"}
   - {name: 加拿大优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "(?=.*(广加|加拿大|CA|温哥华|多伦多|蒙特利尔|🇨🇦|Canada)).*$"}
+#  - {name: 加拿大出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [加拿大手动, 加拿大优选]}
   - {name: 全部优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "^((?!(直连|拒绝|原生落地|剩余|重置|到期|套餐|帮助|电报|官网|国内)).)*$"}   
-  - {name: 其他优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States|广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan)).)*$"} # |广澳|澳大利亚|澳洲|AU|悉尼|墨尔本|珀斯|🇦🇺|Australia|广英|英国|UK|伦敦|曼彻斯特|🇬🇧|United Kingdom|广法|法国|FR|巴黎|马赛|里昂|🇫🇷|France|广德|德国|DE|柏林|法兰克福|慕尼黑|🇩🇪|Germany|广加|加拿大|CA|温哥华|多伦多|蒙特利尔|🇨🇦|Canada
+  - {name: 其他优选, type: url-test, hidden: true, include-all: true, tolerance: 50, interval: 180, filter: "^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States|广台|台湾|台灣|TW|Tai Wan|🇹🇼|🇨🇳|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan|国内|落地)).)*$"} # |广澳|澳大利亚|澳洲|AU|悉尼|墨尔本|珀斯|🇦🇺|Australia|广英|英国|UK|伦敦|曼彻斯特|🇬🇧|United Kingdom|广法|法国|FR|巴黎|马赛|里昂|🇫🇷|France|广德|德国|DE|柏林|法兰克福|慕尼黑|🇩🇪|Germany|广加|加拿大|CA|温哥华|多伦多|蒙特利尔|🇨🇦|Canada
+#  - {name: 其他出口, type: fallback, hidden: true, interval: 180, lazy: false, proxies: [其他手动, 其他优选]}
 
   # 专用选择器
   - {name: 链式专用, type: select, proxies: [原生落地]}
 
+# ──────────────── 分流规则 ────────────────
 rules:
   # ---------- SMB/CIFS 服务直连 ----------
   - DST-PORT,139,DIRECT                       # SMB端口直连
