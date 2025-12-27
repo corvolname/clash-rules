@@ -155,7 +155,7 @@ rules:
   - RULE-SET,Telegram_IP,Telegram,no-resolve
   - RULE-SET,Youtube_Domain,YouTube
   - RULE-SET,Direct_Domain,DIRECT
-  - RULE-SET,Test_Domain,节点选择          # China_Domain 包含该域名 手动截断
+  - RULE-SET,Test_Domain,节点选择          # China_Domain 包含该域名browserleaks.com 手动截断
   - RULE-SET,China_Domain,DIRECT
   - RULE-SET,China_IP,DIRECT,no-resolve
   - RULE-SET,Private_Domain,DIRECT
